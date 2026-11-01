@@ -6,6 +6,10 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Layout from '@/components/Layout'
 import Ask from '@/pages/Ask'
+import { TasksPage } from '@/pages/vendas-pro/TasksPage'
+import { LeadsPage } from '@/pages/vendas-pro/LeadsPage'
+import { ContractsPage } from '@/pages/vendas-pro/ContractsPage'
+import { SalesPage } from '@/pages/vendas-pro/SalesPage'
 import ConfirmEmailChange from '@/pages/ConfirmEmailChange'
 import Campaigns from '@/pages/Campaigns'
 import CaptureForms from '@/pages/CaptureForms'
@@ -53,6 +57,10 @@ export default function App() {
                 <Route path="campanhas" element={<Campaigns />} />
                 <Route path="formularios" element={<CaptureForms />} />
                 <Route path="embed" element={<Navigate to="/formularios" replace />} />
+                <Route path="vendas-pro/tarefas" element={<TasksPage />} />
+                <Route path="vendas-pro/leads" element={<LeadsPage />} />
+                <Route path="vendas-pro/contratos" element={<ContractsPage />} />
+                <Route path="vendas-pro/vendas" element={<SalesPage />} />
                 <Route path="configuracoes" element={<Settings />} />
               </Route>
             </Route>

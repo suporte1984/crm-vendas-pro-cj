@@ -13,6 +13,10 @@ const sections: Record<string, [string, string]> = {
   '/empresas': ['Vendas', 'Empresas'],
   '/campanhas': ['Marketing & Captação', 'Campanhas'],
   '/formularios': ['Marketing & Captação', 'Formulários'],
+  '/vendas-pro/tarefas': ['Vendas PRO', 'Tarefas'],
+  '/vendas-pro/leads': ['Vendas PRO', 'Leads'],
+  '/vendas-pro/contratos': ['Vendas PRO', 'Contratos'],
+  '/vendas-pro/vendas': ['Vendas PRO', 'Vendas'],
   '/configuracoes': ['Workspace', 'Configurações'],
 }
 

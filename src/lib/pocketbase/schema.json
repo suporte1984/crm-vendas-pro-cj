@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-01T14:57:03.028Z",
+  "generatedAt": "2026-11-01T15:39:55.712Z",
   "collections": [
     {
       "name": "users",
@@ -43,7 +43,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["admin", "member"]
+          "selectValues": ["admin", "gestor", "vendedor", "member"]
         },
         {
           "name": "tour_seen_pages",
@@ -897,6 +897,849 @@
         "CREATE INDEX idx_empresas_name ON empresas (name)",
         "CREATE INDEX idx_empresas_owner ON empresas (owner)",
         "CREATE INDEX idx_empresas_created ON empresas (created)"
+      ]
+    },
+    {
+      "name": "products",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "nome",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "descricao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "preco_base",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "ativo",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "comissao_percentual_padrao",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "owner",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_products_nome ON products (nome)",
+        "CREATE INDEX idx_products_ativo ON products (ativo)"
+      ]
+    },
+    {
+      "name": "leads",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "nome",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "empresa",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "telefone",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "origem",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["site", "indicacao", "anuncio", "evento", "outbound", "outro"]
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["novo", "em_negociacao", "convertido", "perdido"]
+        },
+        {
+          "name": "valor_estimado",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "produto_interesse_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "products"
+        },
+        {
+          "name": "responsavel_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "proxima_acao_em",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "motivo_perda",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "convertido_em",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "contato_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "contacts"
+        },
+        {
+          "name": "owner",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_leads_status ON leads (status)",
+        "CREATE INDEX idx_leads_responsavel ON leads (responsavel_id)",
+        "CREATE INDEX idx_leads_created ON leads (created DESC)"
+      ]
+    },
+    {
+      "name": "sales",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "numero",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "cliente_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "contacts"
+        },
+        {
+          "name": "deal_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "deals"
+        },
+        {
+          "name": "produto_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "products"
+        },
+        {
+          "name": "valor_bruto",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "desconto",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "valor_liquido",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "data_venda",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["em_negociacao", "fechada", "paga", "cancelada"]
+        },
+        {
+          "name": "comissao_percentual",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "comissao_valor",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "vendedor_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "forma_pagamento",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "parcelas",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "observacoes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "owner",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "contrato_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "contracts"
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_sales_numero ON sales (numero)",
+        "CREATE INDEX idx_sales_cliente ON sales (cliente_id)",
+        "CREATE INDEX idx_sales_vendedor ON sales (vendedor_id)",
+        "CREATE INDEX idx_sales_status ON sales (status)",
+        "CREATE INDEX idx_sales_data ON sales (data_venda DESC)",
+        "CREATE INDEX `idx_sales_contrato` ON `sales` (contrato_id)"
+      ]
+    },
+    {
+      "name": "contracts",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "numero",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "cliente_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "contacts"
+        },
+        {
+          "name": "produto_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "products"
+        },
+        {
+          "name": "data_inicio",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "data_fim",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "valor_total",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "valor_recorrente",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "periodicidade",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["mensal", "trimestral", "semestral", "anual", "único"]
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["rascunho", "ativo", "suspenso", "encerrado", "cancelado"]
+        },
+        {
+          "name": "venda_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "sales"
+        },
+        {
+          "name": "comissao_valor",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "comissao_percentual",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "observacoes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "anexo_url",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "criado_por",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "owner",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_contracts_numero ON contracts (numero)",
+        "CREATE INDEX idx_contracts_cliente ON contracts (cliente_id)",
+        "CREATE INDEX idx_contracts_status ON contracts (status)",
+        "CREATE INDEX idx_contracts_inicio ON contracts (data_inicio DESC)"
+      ]
+    },
+    {
+      "name": "sale_payments",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "sale_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "sales"
+        },
+        {
+          "name": "numero_parcela",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "valor",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "vencimento",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "data_pagamento",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["pendente", "pago", "atrasado", "cancelado"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_sale_payments_sale ON sale_payments (sale_id)",
+        "CREATE INDEX idx_sale_payments_vencimento ON sale_payments (vencimento)",
+        "CREATE INDEX idx_sale_payments_status ON sale_payments (status)"
+      ]
+    },
+    {
+      "name": "tasks",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "titulo",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "descricao",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "tipo",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["ligacao", "reuniao", "email", "follow_up", "outro"]
+        },
+        {
+          "name": "prioridade",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["baixa", "media", "alta", "urgente"]
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["pendente", "em_andamento", "concluida", "cancelada"]
+        },
+        {
+          "name": "vencimento",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "responsavel_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "entidade_tipo",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["lead", "sale", "contract", "deal"]
+        },
+        {
+          "name": "entidade_id",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "concluida_em",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "owner",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_tasks_status ON tasks (status)",
+        "CREATE INDEX idx_tasks_responsavel ON tasks (responsavel_id)",
+        "CREATE INDEX idx_tasks_vencimento ON tasks (vencimento)",
+        "CREATE INDEX idx_tasks_entidade ON tasks (entidade_tipo, entidade_id)"
+      ]
+    },
+    {
+      "name": "campaign_simulations",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "nome_empresa",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "campanha",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "mes_referencia",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "faturamento_atual",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "investimento_anuncios",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "impressoes",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "cliques",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "leads_gerados",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "vendas_geradas",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "meta_crescimento_percentual",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "metricas_calculadas",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "projecao",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "criado_por",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "owner",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_simulations_empresa ON campaign_simulations (nome_empresa)",
+        "CREATE INDEX idx_simulations_created ON campaign_simulations (created DESC)"
+      ]
+    },
+    {
+      "name": "audit_logs",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "entidade_tipo",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["lead", "sale", "contract", "deal", "task"]
+        },
+        {
+          "name": "entidade_id",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "acao",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "campo",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "valor_anterior",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "valor_novo",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "detalhes",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "usuario_id",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_audit_entidade ON audit_logs (entidade_tipo, entidade_id)",
+        "CREATE INDEX idx_audit_created ON audit_logs (created DESC)"
       ]
     }
   ]

@@ -1,13 +1,17 @@
 import { useState } from 'react'
 import {
+  BadgePercent,
   BarChart3,
   BriefcaseBusiness,
   Building2,
+  CheckSquare,
   ChevronDown,
   ChevronsLeft,
   CircleUserRound,
   Compass,
   ContactRound,
+  FileText,
+  Filter,
   LayoutTemplate,
   LoaderCircle,
   LogOut,
@@ -16,8 +20,10 @@ import {
   PanelLeft,
   RefreshCw,
   Settings,
+  ShoppingBag,
   Sparkles,
   Trash2,
+  UserCheck,
   X,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -54,6 +60,18 @@ const sales = [
   { to: '/formularios', label: 'Formulário de Captação', icon: LayoutTemplate },
 ]
 
+const vendasProItems = [
+  { to: '/vendas-pro/tarefas', label: 'Tarefas', icon: CheckSquare },
+  { to: '/vendas-pro/leads', label: 'Leads', icon: UserCheck },
+  {
+    to: '/vendas-pro/contratos',
+    label: 'Contatos e Contratos',
+    icon: FileText,
+    displayLabel: 'Contratos',
+  },
+  { to: '/vendas-pro/vendas', label: 'Vendas', icon: ShoppingBag },
+]
+
 export function Sidebar({
   collapsed,
   setCollapsed,
@@ -78,6 +96,7 @@ export function Sidebar({
   const { toast } = useToast()
   const { startTourForCurrentPage, tourDisabled } = useTour()
   const [salesOpen, setSalesOpen] = useState(true)
+  const [vendasProOpen, setVendasProOpen] = useState(true)
   const [askOpen, setAskOpen] = useState(true)
   const [userOpen, setUserOpen] = useState(false)
   const [conversationToDelete, setConversationToDelete] = useState<AskConversation | null>(null)
@@ -185,6 +204,34 @@ export function Sidebar({
               </NavLink>
             ))}
           </div>
+
+          <SidebarSection
+            title="Vendas PRO"
+            compact={compact}
+            open={vendasProOpen}
+            setOpen={setVendasProOpen}
+          >
+            {vendasProItems.map(({ to, label, icon: Icon, displayLabel }) => (
+              <NavLink
+                key={to}
+                to={to}
+                title={compact ? label : undefined}
+                onClick={closeMobile}
+                className={({ isActive }) =>
+                  cn(
+                    'flex h-8 items-center rounded-md text-[12px] transition',
+                    compact ? 'justify-center' : 'gap-2 px-2',
+                    isActive
+                      ? 'bg-[#e2e8f0] text-[#1c1c1e] font-semibold'
+                      : 'text-[#475569] hover:bg-[#f1f5f9] hover:text-[#1c1c1e]',
+                  )
+                }
+              >
+                <Icon className="size-3.5 shrink-0 text-amber-600" />
+                {!compact && <span>{displayLabel || label}</span>}
+              </NavLink>
+            ))}
+          </SidebarSection>
 
           <SidebarSection title="Vendas" compact={compact} open={salesOpen} setOpen={setSalesOpen}>
             {sales.map(({ to, label, icon: Icon }) => (
