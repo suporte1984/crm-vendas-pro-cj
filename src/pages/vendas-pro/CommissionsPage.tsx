@@ -101,8 +101,10 @@ export function CommissionsPage() {
   const [loading, setLoading] = useState(true)
   const [sales, setSales] = useState<Sale[]>([])
   const [contracts, setContracts] = useState<Contract[]>([])
-  // Padrão: "Todo o período" — a página abre somando todos os registros, sem recorte de data.
-  const [periodValue, setPeriodValue] = useState('all')
+  // Padrão: ano atual — a página abre somando apenas os registros do ano corrente.
+  const [periodValue, setPeriodValue] = useState(
+    PERIOD_OPTIONS.find((p) => p.value === 'year-current')?.value || 'all',
+  )
 
   const isManager = user?.role === 'admin' || user?.role === 'gestor'
 

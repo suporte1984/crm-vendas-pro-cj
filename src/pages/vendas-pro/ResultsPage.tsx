@@ -239,7 +239,10 @@ async function listSalePaymentsPage(page: number, perPage: number) {
 
 export function ResultsPage() {
   const { toast } = useToast()
-  const [periodValue, setPeriodValue] = useState<string>(PERIOD_OPTIONS[0].value)
+  // Padrão: ano atual — a página abre mostrando apenas os registros do ano corrente.
+  const [periodValue, setPeriodValue] = useState<string>(
+    PERIOD_OPTIONS.find((p) => p.value === 'year-current')?.value || PERIOD_OPTIONS[0].value,
+  )
   const { loading, metrics, series, cashflow, overdue, vendedores, periodSales, leadsCount } =
     usePeriodData(periodValue)
   const totalLeads = leadsCount
