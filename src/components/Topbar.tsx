@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { Menu, Sparkles } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { useAsk } from '@/contexts/AskContext'
+import { useOrganization, DEFAULT_ORG_NAME } from '@/contexts/OrganizationContext'
 
 const sections: Record<string, [string, string]> = {
   '/': ['Agent', 'Ask CRM'],
@@ -23,7 +25,11 @@ const sections: Record<string, [string, string]> = {
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const { pathname } = useLocation()
   const { setOpen } = useAsk()
-  const current = sections[pathname] || ['CRM', 'Adapta']
+  const { nome, loading } = useOrganization()
+  const current = sections[pathname] || ['CRM', nome || DEFAULT_ORG_NAME]
+  useEffect(() => {
+    document.title = loading ? 'CRM' : nome || DEFAULT_ORG_NAME
+  }, [nome, loading])
   return (
     <header className="flex h-12 shrink-0 items-center border-b border-[#e5e7eb] bg-white/90 px-3 backdrop-blur sm:px-4">
       <button

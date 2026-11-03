@@ -46,6 +46,8 @@ import { useTour } from '@/contexts/TourContext'
 import { deleteConversation } from '@/services/ask'
 import type { AskConversation } from '@/types/crm'
 import { cn } from '@/lib/utils'
+import { useEffect } from 'react'
+import { useOrganization, DEFAULT_ORG_NAME } from '@/contexts/OrganizationContext'
 
 const primary = [{ to: '/ask', label: 'Agent', icon: Sparkles, badge: 'IA' }]
 
@@ -70,6 +72,8 @@ const vendasProItems = [
     displayLabel: 'Contratos',
   },
   { to: '/vendas-pro/vendas', label: 'Vendas', icon: ShoppingBag },
+  { to: '/vendas-pro/resultados', label: 'Resultados', icon: BarChart3 },
+  { to: '/vendas-pro/comissoes', label: 'Comissões', icon: BadgePercent },
 ]
 
 export function Sidebar({
@@ -95,6 +99,10 @@ export function Sidebar({
   const navigate = useNavigate()
   const { toast } = useToast()
   const { startTourForCurrentPage, tourDisabled } = useTour()
+  const { nome, loading } = useOrganization()
+  useEffect(() => {
+    document.title = loading ? 'CRM' : nome || DEFAULT_ORG_NAME
+  }, [nome, loading])
   const [salesOpen, setSalesOpen] = useState(true)
   const [vendasProOpen, setVendasProOpen] = useState(true)
   const [askOpen, setAskOpen] = useState(true)

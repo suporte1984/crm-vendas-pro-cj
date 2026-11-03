@@ -3,6 +3,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { OrganizationProvider } from '@/contexts/OrganizationContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Layout from '@/components/Layout'
 import Ask from '@/pages/Ask'
@@ -10,6 +11,8 @@ import { TasksPage } from '@/pages/vendas-pro/TasksPage'
 import { LeadsPage } from '@/pages/vendas-pro/LeadsPage'
 import { ContractsPage } from '@/pages/vendas-pro/ContractsPage'
 import { SalesPage } from '@/pages/vendas-pro/SalesPage'
+import { ResultsPage } from '@/pages/vendas-pro/ResultsPage'
+import { CommissionsPage } from '@/pages/vendas-pro/CommissionsPage'
 import ConfirmEmailChange from '@/pages/ConfirmEmailChange'
 import Campaigns from '@/pages/Campaigns'
 import CaptureForms from '@/pages/CaptureForms'
@@ -33,39 +36,43 @@ export default function App() {
     <BrowserRouter>
       <TooltipProvider>
         <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            <Route path="/captura" element={<LeadCapture />} />
-            <Route path="/form/:id" element={<LeadCapture />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
-            <Route element={<ProtectedRoute />}>
-              <Route element={<Layout />}>
-                <Route index element={<Navigate to="/ask" replace />} />
-                <Route path="ask" element={<Ask />} />
-                <Route path="dashboard" element={<Index />} />
-                <Route path="pipeline" element={<Pipeline />} />
-                <Route path="recuperacao" element={<Recovery />} />
-                <Route path="negocios" element={<Deals />} />
-                <Route path="contatos" element={<Contacts />} />
-                <Route path="empresas" element={<Empresas />} />
-                <Route path="campanhas" element={<Campaigns />} />
-                <Route path="formularios" element={<CaptureForms />} />
-                <Route path="embed" element={<Navigate to="/formularios" replace />} />
-                <Route path="vendas-pro/tarefas" element={<TasksPage />} />
-                <Route path="vendas-pro/leads" element={<LeadsPage />} />
-                <Route path="vendas-pro/contratos" element={<ContractsPage />} />
-                <Route path="vendas-pro/vendas" element={<SalesPage />} />
-                <Route path="configuracoes" element={<Settings />} />
+          <OrganizationProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/captura" element={<LeadCapture />} />
+              <Route path="/form/:id" element={<LeadCapture />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
+              <Route element={<ProtectedRoute />}>
+                <Route element={<Layout />}>
+                  <Route index element={<Navigate to="/ask" replace />} />
+                  <Route path="ask" element={<Ask />} />
+                  <Route path="dashboard" element={<Index />} />
+                  <Route path="pipeline" element={<Pipeline />} />
+                  <Route path="recuperacao" element={<Recovery />} />
+                  <Route path="negocios" element={<Deals />} />
+                  <Route path="contatos" element={<Contacts />} />
+                  <Route path="empresas" element={<Empresas />} />
+                  <Route path="campanhas" element={<Campaigns />} />
+                  <Route path="formularios" element={<CaptureForms />} />
+                  <Route path="embed" element={<Navigate to="/formularios" replace />} />
+                  <Route path="vendas-pro/tarefas" element={<TasksPage />} />
+                  <Route path="vendas-pro/leads" element={<LeadsPage />} />
+                  <Route path="vendas-pro/contratos" element={<ContractsPage />} />
+                  <Route path="vendas-pro/vendas" element={<SalesPage />} />
+                  <Route path="vendas-pro/resultados" element={<ResultsPage />} />
+                  <Route path="vendas-pro/comissoes" element={<CommissionsPage />} />
+                  <Route path="configuracoes" element={<Settings />} />
+                </Route>
               </Route>
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </OrganizationProvider>
         </AuthProvider>
       </TooltipProvider>
     </BrowserRouter>

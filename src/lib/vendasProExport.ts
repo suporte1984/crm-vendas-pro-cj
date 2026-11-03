@@ -63,7 +63,7 @@ export function exportToPrintPdf(title: string, headers: string[], rows: (string
       </head>
       <body>
         <h1>${title}</h1>
-        <p class="meta">Exportado em ${new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date())} • CRM Adapta - Vendas PRO</p>
+        <p class="meta">Exportado em ${new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date())} • Vendas PRO</p>
         <table>
           <thead><tr>${tableHeaderHtml}</tr></thead>
           <tbody>${tableRowsHtml}</tbody>

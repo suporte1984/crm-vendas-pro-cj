@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Camera,
@@ -16,7 +16,9 @@ import { UserAvatar } from '@/components/UserAvatar'
 import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTour } from '@/contexts/TourContext'
+import { useOrganization, DEFAULT_ORG_NAME } from '@/contexts/OrganizationContext'
 import { useToast } from '@/hooks/use-toast'
+import { Building2 } from 'lucide-react'
 import { extractFieldErrors, getErrorMessage } from '@/lib/pocketbase/errors'
 import pb from '@/lib/pocketbase/client'
 
@@ -24,7 +26,30 @@ export default function Settings() {
   const { user, refresh } = useAuth()
   const { toast } = useToast()
   const { tourDisabled, setTourDisabled, resetAllTours } = useTour()
+  const { nome, loading, canEdit, save: saveOrg } = useOrganization()
+  const [orgName, setOrgName] = useState('')
+  const [orgReady, setOrgReady] = useState(false)
   const [updatingTour, setUpdatingTour] = useState(false)
+  useEffect(() => {
+    if (!loading && !orgReady) {
+      setOrgName(nome)
+      setOrgReady(true)
+    }
+  }, [loading, nome, orgReady])
+  async function saveOrgName(e: React.FormEvent) {
+    e.preventDefault()
+    if (!orgName.trim()) return setErrors({ orgName: 'Informe o nome da organização.' })
+    setBusy('org')
+    setErrors({})
+    try {
+      await saveOrg(orgName)
+      toast({ title: 'Nome da organização atualizado' })
+    } catch (error) {
+      setErrors({ orgName: getErrorMessage(error) })
+    } finally {
+      setBusy('')
+    }
+  }
 
   // Profile form state
   const [name, setName] = useState(user?.name || '')
@@ -167,6 +192,12 @@ export default function Settings() {
               <ShieldCheck className="size-3.5" /> Segurança
             </a>
             <a
+              href="#organizacao"
+              className="flex h-8 items-center gap-2 rounded-md px-2.5 text-[11px] text-[#64748b] hover:bg-[#f8fafc] hover:text-[#1c1c1e]"
+            >
+              <Building2 className="size-3.5" /> Organização
+            </a>
+            <a
               href="#tour"
               className="flex h-8 items-center gap-2 rounded-md px-2.5 text-[11px] text-[#64748b] hover:bg-[#f8fafc] hover:text-[#1c1c1e]"
             >
@@ -304,6 +335,32 @@ export default function Settings() {
                   </Submit>
                 </div>
               </form>
+            </SettingsCard>
+
+            {/* SEÇÃO ORGANIZAÇÃO */}
+            <SettingsCard
+              id="organizacao"
+              title="Nome da organização"
+              description="Nome exibido no topo da aplicação e no título da janela. Padrão do sistema: Vendas Pro CRM."
+            >
+              {canEdit ? (
+                <form onSubmit={saveOrgName}>
+                  <Field label="Nome da empresa / organização" error={errors.orgName}>
+                    <input
+                      value={orgName}
+                      onChange={(e) => setOrgName(e.target.value)}
+                      placeholder={DEFAULT_ORG_NAME}
+                    />
+                  </Field>
+                  <Submit busy={busy === 'org'} icon={Building2}>
+                    Salvar nome da organização
+                  </Submit>
+                </form>
+              ) : (
+                <p className="text-[11px] text-[#64748b]">
+                  Apenas administradores ou gestores podem alterar o nome da organização.
+                </p>
+              )}
             </SettingsCard>
 
             {/* SEÇÃO TOUR GUIADO */}
