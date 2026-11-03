@@ -312,27 +312,27 @@ export function CommissionsPage() {
           <>
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <KpiCard
-                title="Comissão total do período"
+                label="Comissão total do período"
                 value={formatMoney(totals.comissaoTotal)}
                 icon={<BadgePercent className="size-4" />}
-                subtitle={`${totals.qtdVendas} venda(s)`}
+                subtext={`${totals.qtdVendas} venda(s)`}
               />
               <KpiCard
-                title="Valor vendido"
+                label="Valor vendido"
                 value={formatMoney(totals.valorVendido)}
-                subtitle="Base de cálculo das comissões"
+                subtext="Base de cálculo das comissões"
                 icon={<TrendingUp className="size-4" />}
               />
               <KpiCard
-                title="Percentual médio"
+                label="Percentual médio"
                 value={`${totals.percentualMedio.toFixed(1)}%`}
-                subtitle="Comissão / valor vendido"
+                subtext="Comissão / valor vendido"
                 icon={<Percent className="size-4" />}
               />
               <KpiCard
-                title="Vendedores"
+                label="Vendedores"
                 value={String(rows.length)}
-                subtitle={isManager ? 'Todo o time' : 'Apenas você'}
+                subtext={isManager ? 'Todo o time' : 'Apenas você'}
                 icon={<Users className="size-4" />}
               />
             </div>

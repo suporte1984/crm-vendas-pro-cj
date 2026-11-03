@@ -356,55 +356,55 @@ export function ResultsPage() {
           <>
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <KpiCard
-                title="Faturamento líquido"
+                label="Faturamento líquido"
                 value={formatMoney(metrics.faturamentoLiquido)}
                 icon={<DollarSign className="size-4" />}
-                subtitle={`${metrics.qtdVendas} vendas no período`}
+                subtext={`${metrics.qtdVendas} vendas no período`}
               />
               <KpiCard
-                title="Ticket médio"
+                label="Ticket médio"
                 value={formatMoney(metrics.ticketMedio)}
                 icon={<Target className="size-4" />}
-                subtitle="Média por venda"
+                subtext="Média por venda"
               />
               <KpiCard
-                title="Comissões acumuladas"
+                label="Comissões acumuladas"
                 value={formatMoney(metrics.comissaoTotal)}
                 icon={<Percent className="size-4" />}
-                subtitle="Sobre vendas do período"
+                subtext="Sobre vendas do período"
               />
               <KpiCard
-                title="Parcelas em atraso"
+                label="Parcelas em atraso"
                 value={formatMoney(overdue)}
                 icon={<AlertTriangle className="size-4" />}
-                subtitle="Todas as vendas (valor em aberto vencido)"
+                subtext="Todas as vendas (valor em aberto vencido)"
               />
             </div>
 
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <KpiCard
-                title="Faturamento bruto"
+                label="Faturamento bruto"
                 value={formatMoney(metrics.faturamentoBruto)}
                 icon={<TrendingUp className="size-4" />}
-                subtitle={`Descontos: ${formatMoney(metrics.descontos)}`}
+                subtext={`Descontos: ${formatMoney(metrics.descontos)}`}
               />
               <KpiCard
-                title="Vendas pagas"
+                label="Vendas pagas"
                 value={`${metrics.qtdPagas}/${metrics.qtdVendas}`}
                 icon={<ShoppingCart className="size-4" />}
-                subtitle="Parcelas totalmente quitadas"
+                subtext="Parcelas totalmente quitadas"
               />
               <KpiCard
-                title="Leads cadastrados"
+                label="Leads cadastrados"
                 value={String(totalLeads)}
                 icon={<Users className="size-4" />}
-                subtitle="Total geral"
+                subtext="Total geral"
               />
               <KpiCard
-                title="ROAS estimado"
+                label="ROAS estimado"
                 value={metrics.roas !== null ? `${metrics.roas.toFixed(2)}x` : '—'}
                 icon={<Wallet className="size-4" />}
-                subtitle={
+                subtext={
                   metrics.roas !== null
                     ? 'Faturamento líquido / investimento'
                     : 'Sem investimento em anúncios no banco'
