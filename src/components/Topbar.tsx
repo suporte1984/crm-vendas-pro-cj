@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
-import { Menu, Sparkles } from 'lucide-react'
+import { Menu, Moon, Sun, Sparkles } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { useAsk } from '@/contexts/AskContext'
 import { useOrganization, DEFAULT_ORG_NAME } from '@/contexts/OrganizationContext'
+import { useTheme } from '@/lib/theme'
 
 const sections: Record<string, [string, string]> = {
   '/': ['Agent', 'Ask CRM'],
@@ -26,6 +27,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
   const { pathname } = useLocation()
   const { setOpen } = useAsk()
   const { nome, loading } = useOrganization()
+  const { theme, toggleTheme } = useTheme()
   const current = sections[pathname] || ['CRM', nome || DEFAULT_ORG_NAME]
   useEffect(() => {
     document.title = loading ? 'CRM' : nome || DEFAULT_ORG_NAME
@@ -62,6 +64,18 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
             <kbd className="ml-1 font-mono text-[#94a3b8]">⌘K</kbd>
           </button>
         )}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-[#e2e8f0] bg-white text-[#64748b] shadow-xs transition hover:bg-[#f8fafc] hover:text-[#1c1c1e]"
+        >
+          {theme === 'dark' ? (
+            <Sun className="size-3.5 text-amber-500" />
+          ) : (
+            <Moon className="size-3.5 text-slate-600" />
+          )}
+        </button>
       </div>
     </header>
   )

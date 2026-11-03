@@ -48,6 +48,8 @@ import type { AskConversation } from '@/types/crm'
 import { cn } from '@/lib/utils'
 import { useEffect } from 'react'
 import { useOrganization, DEFAULT_ORG_NAME } from '@/contexts/OrganizationContext'
+import { useTheme } from '@/lib/theme'
+import { Moon, Sun } from 'lucide-react'
 
 const primary = [{ to: '/ask', label: 'Agent', icon: Sparkles, badge: 'IA' }]
 
@@ -88,6 +90,7 @@ export function Sidebar({
   setMobileOpen: (value: boolean) => void
 }) {
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const {
     conversations,
     activeConversationId,
@@ -328,6 +331,23 @@ export function Sidebar({
                 className="flex h-8 w-full items-center gap-2 px-3 text-[11px] text-[#475569] hover:bg-[#f1f5f9] hover:text-[#1c1c1e]"
               >
                 <Settings className="size-3.5" /> Configurações
+              </button>
+              <button
+                onClick={() => {
+                  toggleTheme()
+                  setUserOpen(false)
+                }}
+                className="flex h-8 w-full items-center gap-2 px-3 text-[11px] text-[#475569] hover:bg-[#f1f5f9] hover:text-[#1c1c1e]"
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="size-3.5 text-amber-500" /> Modo claro
+                  </>
+                ) : (
+                  <>
+                    <Moon className="size-3.5 text-slate-600" /> Modo escuro
+                  </>
+                )}
               </button>
               <button
                 onClick={() => {

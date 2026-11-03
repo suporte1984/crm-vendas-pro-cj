@@ -11,8 +11,10 @@ import {
   Sliders,
   Sparkles,
   UserRound,
+  Users,
 } from 'lucide-react'
 import { UserAvatar } from '@/components/UserAvatar'
+import { TeamSection } from '@/components/TeamSection'
 import { Switch } from '@/components/ui/switch'
 import { useAuth } from '@/contexts/AuthContext'
 import { useTour } from '@/contexts/TourContext'
@@ -192,6 +194,12 @@ export default function Settings() {
               <ShieldCheck className="size-3.5" /> Segurança
             </a>
             <a
+              href="#equipe"
+              className="flex h-8 items-center gap-2 rounded-md px-2.5 text-[11px] text-[#64748b] hover:bg-[#f8fafc] hover:text-[#1c1c1e]"
+            >
+              <Users className="size-3.5" /> Equipe de Vendas
+            </a>
+            <a
               href="#organizacao"
               className="flex h-8 items-center gap-2 rounded-md px-2.5 text-[11px] text-[#64748b] hover:bg-[#f8fafc] hover:text-[#1c1c1e]"
             >
@@ -335,6 +343,15 @@ export default function Settings() {
                   </Submit>
                 </div>
               </form>
+            </SettingsCard>
+
+            {/* SEÇÃO EQUIPE DE VENDAS */}
+            <SettingsCard
+              id="equipe"
+              title="Equipe de Vendas"
+              description="Adicione vendedores e gerencie os acessos do time comercial ao CRM e ao Vendas PRO."
+            >
+              <TeamSection />
             </SettingsCard>
 
             {/* SEÇÃO ORGANIZAÇÃO */}

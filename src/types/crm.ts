@@ -28,6 +28,7 @@ export interface UserRecord extends RecordModel {
   avatar: string
   role: 'admin' | 'gestor' | 'vendedor' | 'member'
   verified: boolean
+  ativo?: boolean
   tour_seen_pages?: string[]
   tour_disabled?: boolean
 }

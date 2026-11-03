@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-03T23:02:18.620Z",
+  "generatedAt": "2026-11-03T23:37:01.788Z",
   "collections": [
     {
       "name": "users",
@@ -8,7 +8,7 @@
         "list": "@request.auth.id != ''",
         "view": "@request.auth.id != ''",
         "create": "",
-        "update": "id = @request.auth.id",
+        "update": "@request.auth.id != '' && (id = @request.auth.id || @request.auth.role = 'admin' || @request.auth.role = 'gestor')",
         "delete": "id = @request.auth.id"
       },
       "fields": [
@@ -53,6 +53,12 @@
         },
         {
           "name": "tour_disabled",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "ativo",
           "type": "bool",
           "required": false,
           "system": false

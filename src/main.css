@@ -45,14 +45,123 @@
     scrollbar-width: thin;
     scrollbar-color: #d1d5db transparent;
   }
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 38 92% 50%;
+    --sidebar-background: 224 71% 4%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 216 34% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 216 34% 17%;
+    --sidebar-ring: 38 92% 50%;
+  }
+
   html {
     color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground antialiased;
     margin: 0;
     min-width: 320px;
     font-family: 'Manrope', sans-serif;
+  }
+  .dark * {
+    scrollbar-color: #334155 transparent;
+  }
+
+  /*
+   * Camada global de dark mode Navy estilo Linear:
+   * Mapeia automaticamente as cores claras (#ffffff, #f8fafc, #fafafa, #f1f5f9, #e2e8f0, #e5e7eb)
+   * para tons profundos de azul navy (#0a0e17, #0f1523, #151d30, #1c263d, etc.) e texto claro.
+   */
+  .dark .bg-white {
+    background-color: #0f1523 !important;
+  }
+  .dark .bg-white\/90 {
+    background-color: rgba(15, 21, 35, 0.9) !important;
+  }
+  .dark .bg-white\/80 {
+    background-color: rgba(15, 21, 35, 0.8) !important;
+  }
+  .dark .bg-\[\#f8fafc\],
+  .dark .bg-\[\#fafafa\],
+  .dark .bg-\[\#f9fafb\] {
+    background-color: #0a0e17 !important;
+  }
+  .dark .bg-\[\#f1f5f9\] {
+    background-color: #151d30 !important;
+  }
+  .dark .hover\:bg-\[\#f8fafc\]:hover,
+  .dark .hover\:bg-\[\#f1f5f9\]:hover,
+  .dark .hover\:bg-\[\#fafafa\]:hover {
+    background-color: #1a233a !important;
+  }
+
+  /* Bordas sutis no dark */
+  .dark .border-\[\#e5e7eb\],
+  .dark .border-\[\#e2e8f0\],
+  .dark .border-\[\#f1f5f9\],
+  .dark .border-\[\#cbd5e1\],
+  .dark .border-\[\#e2e4e8\] {
+    border-color: #1e293b !important;
+  }
+  .dark .hover\:border-\[\#cbd5e1\]:hover {
+    border-color: #334155 !important;
+  }
+  .dark .divide-\[\#e5e7eb\] > :not([hidden]) ~ :not([hidden]),
+  .dark .divide-\[\#e2e8f0\] > :not([hidden]) ~ :not([hidden]),
+  .dark .divide-\[\#f1f5f9\] > :not([hidden]) ~ :not([hidden]) {
+    border-color: #1e293b !important;
+  }
+
+  /* Cores de texto primário, secundário e muted no dark */
+  .dark .text-\[\#1c1c1e\],
+  .dark .text-\[\#0f172a\],
+  .dark .text-\[\#1e293b\] {
+    color: #f1f5f9 !important;
+  }
+  .dark .text-\[\#475569\],
+  .dark .text-\[\#334155\] {
+    color: #cbd5e1 !important;
+  }
+  .dark .text-\[\#64748b\] {
+    color: #94a3b8 !important;
+  }
+  .dark .text-\[\#94a3b8\] {
+    color: #64748b !important;
+  }
+
+  /* Ajustes para inputs, selects e tabelas no dark */
+  .dark input,
+  .dark select,
+  .dark textarea {
+    color-scheme: dark;
+  }
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: #475569 !important;
   }
   button,
   input,
@@ -88,6 +197,17 @@
     transition:
       border-color 150ms,
       box-shadow 150ms;
+  }
+  .dark .crm-field-control > input,
+  .dark .crm-field-control > select,
+  .dark .crm-field-control > textarea {
+    border-color: #242c3d;
+    background: #111726;
+    color: #f1f5f9;
+  }
+  .dark .crm-field-control option {
+    background: #111726;
+    color: #f1f5f9;
   }
   .crm-field-control > input,
   .crm-field-control > select {
