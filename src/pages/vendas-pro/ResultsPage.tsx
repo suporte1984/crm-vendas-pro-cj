@@ -146,7 +146,10 @@ function usePeriodData(periodValue: string) {
     }
   }, [toast])
 
-  const period = PERIOD_OPTIONS.find((p) => p.value === periodValue) || PERIOD_OPTIONS[0]
+  const period =
+    PERIOD_OPTIONS.find((p) => p.value === periodValue) ||
+    PERIOD_OPTIONS.find((p) => p.value === 'all') ||
+    PERIOD_OPTIONS[0]
 
   const data = useMemo(() => {
     const periodSales = filterSalesByPeriod(sales, period.start, period.end)

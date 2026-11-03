@@ -101,7 +101,8 @@ export function CommissionsPage() {
   const [loading, setLoading] = useState(true)
   const [sales, setSales] = useState<Sale[]>([])
   const [contracts, setContracts] = useState<Contract[]>([])
-  const [periodValue, setPeriodValue] = useState(PERIOD_OPTIONS[0].value)
+  // Padrão: "Todo o período" — a página abre somando todos os registros, sem recorte de data.
+  const [periodValue, setPeriodValue] = useState('all')
 
   const isManager = user?.role === 'admin' || user?.role === 'gestor'
 
@@ -130,7 +131,10 @@ export function CommissionsPage() {
     }
   }, [toast])
 
-  const period = PERIOD_OPTIONS.find((p) => p.value === periodValue) || PERIOD_OPTIONS[0]
+  const period =
+    PERIOD_OPTIONS.find((p) => p.value === periodValue) ||
+    PERIOD_OPTIONS.find((p) => p.value === 'all') ||
+    PERIOD_OPTIONS[0]
 
   const rows = useMemo<CommissionRow[]>(() => {
     const periodSales = filterSalesByPeriod(sales, period.start, period.end).filter(
