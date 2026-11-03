@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BadgePercent, CalendarRange, Download, Loader2, ShieldCheck } from 'lucide-react'
+import {
+  BadgePercent,
+  CalendarRange,
+  Download,
+  Loader2,
+  Percent,
+  ShieldCheck,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -294,7 +303,7 @@ export function CommissionsPage() {
         {rows.length === 0 ? (
           <div className="mt-6">
             <EmptyState
-              icon={BadgePercent}
+              icon={<BadgePercent className="size-5" />}
               title="Sem comissões no período"
               description="Não há comissões calculadas no período selecionado. Registre vendas com percentual de comissão para vê-las aqui."
             />
@@ -305,26 +314,26 @@ export function CommissionsPage() {
               <KpiCard
                 title="Comissão total do período"
                 value={formatMoney(totals.comissaoTotal)}
-                icon={BadgePercent}
+                icon={<BadgePercent className="size-4" />}
                 subtitle={`${totals.qtdVendas} venda(s)`}
               />
               <KpiCard
                 title="Valor vendido"
                 value={formatMoney(totals.valorVendido)}
                 subtitle="Base de cálculo das comissões"
-                icon={BadgePercent}
+                icon={<TrendingUp className="size-4" />}
               />
               <KpiCard
                 title="Percentual médio"
                 value={`${totals.percentualMedio.toFixed(1)}%`}
                 subtitle="Comissão / valor vendido"
-                icon={BadgePercent}
+                icon={<Percent className="size-4" />}
               />
               <KpiCard
                 title="Vendedores"
                 value={String(rows.length)}
                 subtitle={isManager ? 'Todo o time' : 'Apenas você'}
-                icon={BadgePercent}
+                icon={<Users className="size-4" />}
               />
             </div>
 

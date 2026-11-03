@@ -200,6 +200,7 @@ function usePeriodData(periodValue: string) {
       metrics,
       series,
       leadsByOrigem,
+      leadsCount: leads.length,
       cashflow,
       overdue,
       vendedores,
@@ -346,7 +347,7 @@ export function ResultsPage() {
         {metrics.qtdVendas === 0 ? (
           <div className="mt-6">
             <EmptyState
-              icon={BarChart3}
+              icon={<BarChart3 className="size-5" />}
               title="Sem vendas no período"
               description="Não houve vendas registradas no período selecionado. Tente outro período ou registre uma venda em Vendas."
             />
@@ -357,25 +358,25 @@ export function ResultsPage() {
               <KpiCard
                 title="Faturamento líquido"
                 value={formatMoney(metrics.faturamentoLiquido)}
-                icon={DollarSign}
+                icon={<DollarSign className="size-4" />}
                 subtitle={`${metrics.qtdVendas} vendas no período`}
               />
               <KpiCard
                 title="Ticket médio"
                 value={formatMoney(metrics.ticketMedio)}
-                icon={Target}
+                icon={<Target className="size-4" />}
                 subtitle="Média por venda"
               />
               <KpiCard
                 title="Comissões acumuladas"
                 value={formatMoney(metrics.comissaoTotal)}
-                icon={Percent}
+                icon={<Percent className="size-4" />}
                 subtitle="Sobre vendas do período"
               />
               <KpiCard
                 title="Parcelas em atraso"
                 value={formatMoney(overdue)}
-                icon={AlertTriangle}
+                icon={<AlertTriangle className="size-4" />}
                 subtitle="Todas as vendas (valor em aberto vencido)"
               />
             </div>
@@ -384,25 +385,25 @@ export function ResultsPage() {
               <KpiCard
                 title="Faturamento bruto"
                 value={formatMoney(metrics.faturamentoBruto)}
-                icon={TrendingUp}
+                icon={<TrendingUp className="size-4" />}
                 subtitle={`Descontos: ${formatMoney(metrics.descontos)}`}
               />
               <KpiCard
                 title="Vendas pagas"
                 value={`${metrics.qtdPagas}/${metrics.qtdVendas}`}
-                icon={ShoppingCart}
+                icon={<ShoppingCart className="size-4" />}
                 subtitle="Parcelas totalmente quitadas"
               />
               <KpiCard
                 title="Leads cadastrados"
-                value={String(leads.length)}
-                icon={Users}
+                value={String(totalLeads)}
+                icon={<Users className="size-4" />}
                 subtitle="Total geral"
               />
               <KpiCard
                 title="ROAS estimado"
                 value={metrics.roas !== null ? `${metrics.roas.toFixed(2)}x` : '—'}
-                icon={Wallet}
+                icon={<Wallet className="size-4" />}
                 subtitle={
                   metrics.roas !== null
                     ? 'Faturamento líquido / investimento'
