@@ -180,279 +180,281 @@ export function ChannelsPage() {
   }, [connections, search, typeFilter])
 
   return (
-    <div className="w-full p-4 sm:p-6 space-y-6 max-w-[1400px] mx-auto">
-      {/* Topo / Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Conexões</h1>
-          <p className="text-[13px] text-muted-foreground">
-            Gerencie suas conexões de canais de atendimento (WhatsApp e Instagram Direct)
-          </p>
+    <div className="flex-1 min-h-0 w-full overflow-y-auto p-4 sm:p-6">
+      <div className="space-y-6 max-w-[1400px] mx-auto pb-8">
+        {/* Topo / Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Conexões</h1>
+            <p className="text-[13px] text-muted-foreground">
+              Gerencie suas conexões de canais de atendimento (WhatsApp e Instagram Direct)
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setMetaModalOpen(true)}
+              className="gap-2 text-[12px] border-border text-foreground hover:bg-muted"
+            >
+              <KeyRound className="size-4 text-emerald-600" />
+              Configurar Meta API
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/inbox')}
+              className="gap-2 text-[12px] border-border text-foreground hover:bg-muted"
+            >
+              <MessageSquare className="size-4 text-primary" />
+              Caixa de Entrada
+            </Button>
+
+            {canManage && (
+              <Button
+                size="sm"
+                onClick={() => navigate('/channels/new')}
+                className="gap-1.5 text-[12px] bg-primary text-primary-foreground shadow-sm hover:opacity-95"
+              >
+                <Plus className="size-4" />
+                Criar
+              </Button>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {/* Barra de Filtros */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
+          <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center max-w-2xl">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar conexões..."
+                className="pl-9 h-9 text-[13px] bg-background"
+              />
+            </div>
+
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-full sm:w-[190px] h-9 text-[13px] bg-background">
+                <SelectValue placeholder="Todos os Tipos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Tipos</SelectItem>
+                <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                <SelectItem value="instagram">Instagram</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <label className="flex items-center gap-2 text-[13px] text-muted-foreground cursor-pointer select-none">
+            <Checkbox
+              checked={showArchived}
+              onCheckedChange={(checked) => setShowArchived(Boolean(checked))}
+            />
+            Mostrar canais arquivados
+          </label>
+        </div>
+
+        {/* Grid de Cards de Conexões */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-44 rounded-xl border border-border bg-card p-5 animate-pulse"
+              />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-card/50 p-12 text-center">
+            <div className="mx-auto grid size-12 place-items-center rounded-full bg-muted text-muted-foreground mb-3">
+              <MessageSquare className="size-6" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">Nenhuma conexão encontrada</h3>
+            <p className="text-[13px] text-muted-foreground mt-1 max-w-md mx-auto">
+              Crie sua primeira conexão para receber mensagens do WhatsApp ou Instagram Direct
+              diretamente no CRM.
+            </p>
+            {canManage && (
+              <Button
+                size="sm"
+                onClick={() => navigate('/channels/new')}
+                className="mt-4 gap-1.5 text-[12px]"
+              >
+                <Plus className="size-4" /> Criar Conexão
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((conn) => {
+              const isWa = conn.tipo === 'whatsapp' || conn.tipo === 'whatsapp_cloud'
+              const isIg = conn.tipo === 'instagram'
+
+              const tipoLabel =
+                conn.tipo === 'whatsapp_cloud'
+                  ? 'WhatsApp Oficial (Cloud API)'
+                  : conn.tipo === 'whatsapp'
+                    ? 'WhatsApp'
+                    : 'Instagram (Beta)'
+
+              const isAtivo = conn.status === 'ativo'
+              const isConectado = conn.conexao_status === 'conectado'
+
+              return (
+                <div
+                  key={conn.id}
+                  className="group relative rounded-xl border border-border bg-card p-5 shadow-sm transition hover:shadow-md hover:border-border/80 flex flex-col justify-between"
+                >
+                  {/* Header do Card */}
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-muted/60">
+                          {isWa ? (
+                            <WhatsAppIcon className="size-5" />
+                          ) : (
+                            <InstagramIcon className="size-5" />
+                          )}
+                        </div>
+                        <h3
+                          className="font-semibold text-[15px] text-foreground truncate"
+                          title={conn.name}
+                        >
+                          {conn.name}
+                        </h3>
+                      </div>
+
+                      {/* Ações superiores */}
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        {canManage && (
+                          <>
+                            <button
+                              onClick={() => navigate(`/channels/${conn.id}/edit`)}
+                              title="Editar Configurações"
+                              className="p-1.5 rounded-md hover:bg-muted hover:text-foreground transition"
+                            >
+                              <Settings2 className="size-4" />
+                            </button>
+                            <button
+                              onClick={() => handleToggleConexao(conn)}
+                              title="Alternar Conexão"
+                              className="p-1.5 rounded-md hover:bg-muted hover:text-foreground transition"
+                            >
+                              <ArrowLeftRight className="size-4" />
+                            </button>
+                            <button
+                              onClick={() => handleArchive(conn)}
+                              title="Arquivar Canal"
+                              className="p-1.5 rounded-md hover:bg-destructive/10 hover:text-destructive transition"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Detalhes do Card em Linhas Chave/Valor */}
+                    <div className="mt-4 space-y-2 text-[13px]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Tipo</span>
+                        <span className="font-medium text-foreground">{tipoLabel}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Status</span>
+                        <button
+                          onClick={() => handleToggleStatus(conn)}
+                          disabled={!canManage}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition ${
+                            isAtivo
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:opacity-80'
+                              : 'bg-muted text-muted-foreground border border-border hover:opacity-80'
+                          }`}
+                        >
+                          {isAtivo ? 'Ativo' : 'Inativo'}
+                        </button>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Conexão</span>
+                        <button
+                          onClick={() => handleToggleConexao(conn)}
+                          disabled={!canManage}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition ${
+                            isConectado
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                              : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                          }`}
+                        >
+                          {isConectado ? 'Conectado' : 'Desconectado'}
+                        </button>
+                      </div>
+
+                      {conn.numero_conectado ? (
+                        <div className="flex items-center justify-between pt-1 border-t border-border/50">
+                          <span className="text-muted-foreground">Número conectado</span>
+                          <span className="font-mono text-[12px] font-medium text-foreground">
+                            {conn.numero_conectado}
+                          </span>
+                        </div>
+                      ) : isIg ? (
+                        <div className="flex items-center justify-between pt-1 border-t border-border/50">
+                          <span className="text-muted-foreground">Conta conectada</span>
+                          <span className="text-[12px] text-muted-foreground italic">
+                            Via Instagram Direct
+                          </span>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {/* Rodapé do Card */}
+                  <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                    <span className="text-[11px] text-muted-foreground">
+                      Visibilidade:{' '}
+                      {conn.visibilidade === 'organizacao' ? 'Organização' : conn.visibilidade}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => navigate('/inbox')}
+                      className="h-7 text-[12px] gap-1 text-primary hover:text-primary hover:bg-primary/10"
+                    >
+                      Ver conversas
+                    </Button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Banner Informativo no Rodapé */}
+        <div className="rounded-xl border border-border bg-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[13px]">
+          <div className="flex items-center gap-2.5 text-muted-foreground">
+            <Sparkles className="size-4 text-primary shrink-0" />
+            <span>
+              As mensagens recebidas criam automaticamente contatos e conversas na Caixa de Entrada.
+            </span>
+          </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setMetaModalOpen(true)}
-            className="gap-2 text-[12px] border-border text-foreground hover:bg-muted"
+            className="text-[12px] shrink-0"
           >
-            <KeyRound className="size-4 text-emerald-600" />
-            Configurar Meta API
+            Ver instruções de Webhook da Meta
           </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/inbox')}
-            className="gap-2 text-[12px] border-border text-foreground hover:bg-muted"
-          >
-            <MessageSquare className="size-4 text-primary" />
-            Caixa de Entrada
-          </Button>
-
-          {canManage && (
-            <Button
-              size="sm"
-              onClick={() => navigate('/channels/new')}
-              className="gap-1.5 text-[12px] bg-primary text-primary-foreground shadow-sm hover:opacity-95"
-            >
-              <Plus className="size-4" />
-              Criar
-            </Button>
-          )}
         </div>
+
+        <MetaCredentialsModal open={metaModalOpen} onClose={() => setMetaModalOpen(false)} />
       </div>
-
-      {/* Barra de Filtros */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
-        <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center max-w-2xl">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar conexões..."
-              className="pl-9 h-9 text-[13px] bg-background"
-            />
-          </div>
-
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-[190px] h-9 text-[13px] bg-background">
-              <SelectValue placeholder="Todos os Tipos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os Tipos</SelectItem>
-              <SelectItem value="whatsapp">WhatsApp</SelectItem>
-              <SelectItem value="instagram">Instagram</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <label className="flex items-center gap-2 text-[13px] text-muted-foreground cursor-pointer select-none">
-          <Checkbox
-            checked={showArchived}
-            onCheckedChange={(checked) => setShowArchived(Boolean(checked))}
-          />
-          Mostrar canais arquivados
-        </label>
-      </div>
-
-      {/* Grid de Cards de Conexões */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-44 rounded-xl border border-border bg-card p-5 animate-pulse"
-            />
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card/50 p-12 text-center">
-          <div className="mx-auto grid size-12 place-items-center rounded-full bg-muted text-muted-foreground mb-3">
-            <MessageSquare className="size-6" />
-          </div>
-          <h3 className="text-base font-semibold text-foreground">Nenhuma conexão encontrada</h3>
-          <p className="text-[13px] text-muted-foreground mt-1 max-w-md mx-auto">
-            Crie sua primeira conexão para receber mensagens do WhatsApp ou Instagram Direct
-            diretamente no CRM.
-          </p>
-          {canManage && (
-            <Button
-              size="sm"
-              onClick={() => navigate('/channels/new')}
-              className="mt-4 gap-1.5 text-[12px]"
-            >
-              <Plus className="size-4" /> Criar Conexão
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((conn) => {
-            const isWa = conn.tipo === 'whatsapp' || conn.tipo === 'whatsapp_cloud'
-            const isIg = conn.tipo === 'instagram'
-
-            const tipoLabel =
-              conn.tipo === 'whatsapp_cloud'
-                ? 'WhatsApp Oficial (Cloud API)'
-                : conn.tipo === 'whatsapp'
-                  ? 'WhatsApp'
-                  : 'Instagram (Beta)'
-
-            const isAtivo = conn.status === 'ativo'
-            const isConectado = conn.conexao_status === 'conectado'
-
-            return (
-              <div
-                key={conn.id}
-                className="group relative rounded-xl border border-border bg-card p-5 shadow-sm transition hover:shadow-md hover:border-border/80 flex flex-col justify-between"
-              >
-                {/* Header do Card */}
-                <div>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-muted/60">
-                        {isWa ? (
-                          <WhatsAppIcon className="size-5" />
-                        ) : (
-                          <InstagramIcon className="size-5" />
-                        )}
-                      </div>
-                      <h3
-                        className="font-semibold text-[15px] text-foreground truncate"
-                        title={conn.name}
-                      >
-                        {conn.name}
-                      </h3>
-                    </div>
-
-                    {/* Ações superiores */}
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      {canManage && (
-                        <>
-                          <button
-                            onClick={() => navigate(`/channels/${conn.id}/edit`)}
-                            title="Editar Configurações"
-                            className="p-1.5 rounded-md hover:bg-muted hover:text-foreground transition"
-                          >
-                            <Settings2 className="size-4" />
-                          </button>
-                          <button
-                            onClick={() => handleToggleConexao(conn)}
-                            title="Alternar Conexão"
-                            className="p-1.5 rounded-md hover:bg-muted hover:text-foreground transition"
-                          >
-                            <ArrowLeftRight className="size-4" />
-                          </button>
-                          <button
-                            onClick={() => handleArchive(conn)}
-                            title="Arquivar Canal"
-                            className="p-1.5 rounded-md hover:bg-destructive/10 hover:text-destructive transition"
-                          >
-                            <Trash2 className="size-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Detalhes do Card em Linhas Chave/Valor */}
-                  <div className="mt-4 space-y-2 text-[13px]">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Tipo</span>
-                      <span className="font-medium text-foreground">{tipoLabel}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Status</span>
-                      <button
-                        onClick={() => handleToggleStatus(conn)}
-                        disabled={!canManage}
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition ${
-                          isAtivo
-                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:opacity-80'
-                            : 'bg-muted text-muted-foreground border border-border hover:opacity-80'
-                        }`}
-                      >
-                        {isAtivo ? 'Ativo' : 'Inativo'}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Conexão</span>
-                      <button
-                        onClick={() => handleToggleConexao(conn)}
-                        disabled={!canManage}
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition ${
-                          isConectado
-                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                            : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
-                        }`}
-                      >
-                        {isConectado ? 'Conectado' : 'Desconectado'}
-                      </button>
-                    </div>
-
-                    {conn.numero_conectado ? (
-                      <div className="flex items-center justify-between pt-1 border-t border-border/50">
-                        <span className="text-muted-foreground">Número conectado</span>
-                        <span className="font-mono text-[12px] font-medium text-foreground">
-                          {conn.numero_conectado}
-                        </span>
-                      </div>
-                    ) : isIg ? (
-                      <div className="flex items-center justify-between pt-1 border-t border-border/50">
-                        <span className="text-muted-foreground">Conta conectada</span>
-                        <span className="text-[12px] text-muted-foreground italic">
-                          Via Instagram Direct
-                        </span>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-
-                {/* Rodapé do Card */}
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
-                  <span className="text-[11px] text-muted-foreground">
-                    Visibilidade:{' '}
-                    {conn.visibilidade === 'organizacao' ? 'Organização' : conn.visibilidade}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => navigate('/inbox')}
-                    className="h-7 text-[12px] gap-1 text-primary hover:text-primary hover:bg-primary/10"
-                  >
-                    Ver conversas
-                  </Button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      {/* Banner Informativo no Rodapé */}
-      <div className="rounded-xl border border-border bg-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[13px]">
-        <div className="flex items-center gap-2.5 text-muted-foreground">
-          <Sparkles className="size-4 text-primary shrink-0" />
-          <span>
-            As mensagens recebidas criam automaticamente contatos e conversas na Caixa de Entrada.
-          </span>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setMetaModalOpen(true)}
-          className="text-[12px] shrink-0"
-        >
-          Ver instruções de Webhook da Meta
-        </Button>
-      </div>
-
-      <MetaCredentialsModal open={metaModalOpen} onClose={() => setMetaModalOpen(false)} />
     </div>
   )
 }
