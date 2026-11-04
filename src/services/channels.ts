@@ -106,17 +106,45 @@ export async function listChannelMessages(conversationId: string): Promise<Chann
   })
 }
 
+export async function listLastMessagesByConversations(): Promise<
+  Record<string, { direcao: string; texto: string; created: string }>
+> {
+  // Busca mensagens recentes para identificar se a última mensagem de cada conversa é do cliente (Não respondida)
+  try {
+    const list = await pb.collection('channel_messages').getList<ChannelMessage>(1, 100, {
+      sort: '-created',
+    })
+    const map: Record<string, { direcao: string; texto: string; created: string }> = {}
+    for (const msg of list.items) {
+      if (!map[msg.conversation]) {
+        map[msg.conversation] = {
+          direcao: msg.direcao,
+          texto: msg.texto,
+          created: msg.created,
+        }
+      }
+    }
+    return map
+  } catch {
+    return {}
+  }
+}
+
 export interface SendMessageResult {
   success: boolean
   message_id: string
   status_envio: string
   is_simulated: boolean
+  is_private?: boolean
   info: string
 }
 
 export async function sendChannelMessage(
   conversationId: string,
   texto: string,
+  options?: {
+    isPrivate?: boolean
+  },
 ): Promise<SendMessageResult> {
   const baseUrl = import.meta.env.VITE_POCKETBASE_URL || ''
   const token = pb.authStore.token
@@ -130,6 +158,7 @@ export async function sendChannelMessage(
     body: JSON.stringify({
       conversation_id: conversationId,
       texto,
+      is_private: options?.isPrivate || false,
     }),
   })
 
@@ -139,6 +168,41 @@ export async function sendChannelMessage(
   }
 
   return (await res.json()) as SendMessageResult
+}
+
+export async function sendChannelAttachmentMessage(params: {
+  conversationId: string
+  file: File
+  caption?: string
+  isPrivate?: boolean
+}): Promise<ChannelMessage> {
+  const user = pb.authStore.model
+  const formData = new FormData()
+  formData.append('conversation', params.conversationId)
+  formData.append('direcao', 'saida')
+  formData.append('tipo_mensagem', params.isPrivate ? 'nota_privada' : 'mensagem')
+  formData.append('texto', params.caption?.trim() || `[Anexo: ${params.file.name}]`)
+  formData.append('status_envio', params.isPrivate ? 'enviada' : 'simulada')
+  formData.append('anexo', params.file)
+  formData.append('nome_anexo', params.file.name)
+  if (user?.id) {
+    formData.append('autor', user.id)
+  }
+
+  const createdMsg = await pb.collection('channel_messages').create<ChannelMessage>(formData)
+
+  // Atualizar conversa com a última mensagem
+  try {
+    await pb.collection('channel_conversations').update(params.conversationId, {
+      ultima_mensagem: params.caption?.trim() || `[Anexo: ${params.file.name}]`,
+      ultima_mensagem_em: new Date().toISOString(),
+      nao_lidas: 0,
+    })
+  } catch {
+    /* intentionally ignored */
+  }
+
+  return createdMsg
 }
 
 // --- Status de Credenciais da Meta ---

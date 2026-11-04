@@ -302,6 +302,7 @@ routerAdd('POST', '/backend/v1/channels/send', (e) => {
     const body = e.requestInfo().body || {}
     const conversationId = body.conversation_id || ''
     const rawText = typeof body.texto === 'string' ? body.texto.trim() : ''
+    const isNotaPrivada = Boolean(body.is_private || body.tipo_mensagem === 'nota_privada')
 
     if (!conversationId) {
       return e.badRequestError('ID da conversa é obrigatório.')
@@ -326,7 +327,33 @@ routerAdd('POST', '/backend/v1/channels/send', (e) => {
       return e.badRequestError('Conexão de canal associada não encontrada.')
     }
 
-    // Aplicar assinatura se configurada
+    // Se for NOTA PRIVADA: NUNCA despachar para o cliente! Salvar apenas no histórico interno
+    if (isNotaPrivada) {
+      const msgCol = $app.findCollectionByNameOrId('channel_messages')
+      const msgRecord = new Record(msgCol)
+      msgRecord.set('conversation', conversation.id)
+      msgRecord.set('direcao', 'saida')
+      msgRecord.set('tipo_mensagem', 'nota_privada')
+      msgRecord.set('texto', rawText)
+      msgRecord.set('status_envio', 'enviada')
+      msgRecord.set('autor', authRecord.id)
+      $app.save(msgRecord)
+
+      // Atualizar timestamp da conversa sem marcar como mensagem enviada ao cliente
+      conversation.set('updated', new Date().toISOString())
+      $app.save(conversation)
+
+      return e.json(200, {
+        success: true,
+        message_id: msgRecord.id,
+        status_envio: 'enviada',
+        is_simulated: false,
+        is_private: true,
+        info: 'Nota privada interna registrada com sucesso (visível apenas para a equipe).',
+      })
+    }
+
+    // Aplicar assinatura se configurada (apenas para mensagens normais aos clientes)
     let finalTexto = rawText
     const assinaturaPos = connection.getString('assinatura_posicao')
     const assinaturaTxt = connection.getString('assinatura_texto')
@@ -432,6 +459,7 @@ routerAdd('POST', '/backend/v1/channels/send', (e) => {
     const msgRecord = new Record(msgCol)
     msgRecord.set('conversation', conversation.id)
     msgRecord.set('direcao', 'saida')
+    msgRecord.set('tipo_mensagem', 'mensagem')
     msgRecord.set('texto', finalTexto)
     msgRecord.set('status_envio', dispatchStatus)
     msgRecord.set('autor', authRecord.id)

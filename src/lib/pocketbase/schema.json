@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T01:34:36.210Z",
+  "generatedAt": "2026-11-04T01:43:26.023Z",
   "collections": [
     {
       "name": "users",
@@ -1991,6 +1991,12 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "is_grupo",
+          "type": "bool",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [
@@ -2076,6 +2082,25 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "tipo_mensagem",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["mensagem", "nota_privada"]
+        },
+        {
+          "name": "anexo",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "nome_anexo",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [

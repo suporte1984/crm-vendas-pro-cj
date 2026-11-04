@@ -49,6 +49,7 @@ export interface ChannelConversation {
   nao_lidas: number
   status: ConversationStatus
   responsavel?: string
+  is_grupo?: boolean
   created: string
   updated: string
   expand?: {
@@ -70,6 +71,7 @@ export interface ChannelConversation {
 
 export type MessageDirecao = 'entrada' | 'saida' | 'sistema'
 export type MessageStatusEnvio = 'enviada' | 'entregue' | 'lida' | 'falha' | 'simulada'
+export type TipoMensagem = 'mensagem' | 'nota_privada'
 
 export interface ChannelMessage {
   id: string
@@ -77,7 +79,10 @@ export interface ChannelMessage {
   direcao: MessageDirecao
   texto: string
   status_envio?: MessageStatusEnvio
+  tipo_mensagem?: TipoMensagem
   midia_url?: string
+  anexo?: string
+  nome_anexo?: string
   message_id_externo?: string
   autor?: string
   metadata?: Record<string, unknown>
