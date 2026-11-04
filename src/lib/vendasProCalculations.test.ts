@@ -18,6 +18,8 @@ describe('Vendas PRO - Funções de Cálculo Financeiro', () => {
     expect(calculateCommissionValue(850, 12)).toBe(102)
     expect(calculateCommissionValue(1234.56, 15)).toBe(185.18)
     expect(calculateCommissionValue(1000, 0)).toBe(0)
+    // Caso de uso das especificações do usuário: R$ 35.000 a 5% = R$ 1.750,00
+    expect(calculateCommissionValue(35000, 5)).toBe(1750)
   })
 
   it('gera parcelamento com soma exata ajustando centavos na última parcela', () => {

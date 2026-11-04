@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Check, ChevronRight, LoaderCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { MoneyInput } from '@/components/vendas-pro/MoneyInput'
+import { calculateCommissionValue } from '@/lib/vendasProCalculations'
 import type {
   Contract,
   ContractPeriodicidade,
@@ -73,7 +74,7 @@ export function ContractModal({
   const [status, setStatus] = useState<ContractStatus>(contract?.status || 'ativo')
   const [vendaId, setVendaId] = useState(contract?.venda_id || 'nenhuma')
   const [comissaoPercentual, setComissaoPercentual] = useState<number>(
-    contract?.comissao_percentual || 10,
+    contract?.comissao_percentual ?? 10,
   )
   const [observacoes, setObservacoes] = useState(contract?.observacoes || '')
   const [anexoUrl, setAnexoUrl] = useState(contract?.anexo_url || '')
@@ -81,37 +82,55 @@ export function ContractModal({
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
-  function handleOpenChange(val: boolean) {
-    if (val && contract) {
-      setClienteId(contract.cliente_id || '')
-      setProdutoId(contract.produto_id || 'nenhum')
-      setDataInicio(contract.data_inicio ? contract.data_inicio.slice(0, 10) : '')
-      setDataFim(contract.data_fim ? contract.data_fim.slice(0, 10) : '')
-      setValorTotal(contract.valor_total || 0)
-      setValorRecorrente(contract.valor_recorrente || 0)
-      setPeriodicidade(contract.periodicidade || 'mensal')
-      setStatus(contract.status || 'ativo')
-      setVendaId(contract.venda_id || 'nenhuma')
-      setComissaoPercentual(contract.comissao_percentual || 10)
-      setObservacoes(contract.observacoes || '')
-      setAnexoUrl(contract.anexo_url || '')
+  // Sincronizar todos os campos quando o modal abre ou o contrato selecionado muda
+  useEffect(() => {
+    if (open) {
+      if (contract) {
+        setClienteId(contract.cliente_id || '')
+        setProdutoId(contract.produto_id || 'nenhum')
+        setDataInicio(
+          contract.data_inicio
+            ? contract.data_inicio.slice(0, 10)
+            : new Date().toISOString().slice(0, 10),
+        )
+        setDataFim(
+          contract.data_fim
+            ? contract.data_fim.slice(0, 10)
+            : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        )
+        setValorTotal(contract.valor_total || 0)
+        setValorRecorrente(contract.valor_recorrente || 0)
+        setPeriodicidade(contract.periodicidade || 'mensal')
+        setStatus(contract.status || 'ativo')
+        setVendaId(contract.venda_id || 'nenhuma')
+        setComissaoPercentual(
+          typeof contract.comissao_percentual === 'number' ? contract.comissao_percentual : 10,
+        )
+        setObservacoes(contract.observacoes || '')
+        setAnexoUrl(contract.anexo_url || '')
+      } else {
+        setClienteId('')
+        setProdutoId('nenhum')
+        setDataInicio(new Date().toISOString().slice(0, 10))
+        setDataFim(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10))
+        setValorTotal(0)
+        setValorRecorrente(0)
+        setPeriodicidade('mensal')
+        setStatus('ativo')
+        setVendaId('nenhuma')
+        setComissaoPercentual(10)
+        setObservacoes('')
+        setAnexoUrl('')
+      }
       setStep('cliente')
-    } else if (val) {
-      setClienteId('')
-      setProdutoId('nenhum')
-      setDataInicio(new Date().toISOString().slice(0, 10))
-      setDataFim(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10))
-      setValorTotal(0)
-      setValorRecorrente(0)
-      setPeriodicidade('mensal')
-      setStatus('ativo')
-      setVendaId('nenhuma')
-      setComissaoPercentual(10)
-      setObservacoes('')
-      setAnexoUrl('')
-      setStep('cliente')
+      setErrorMsg('')
     }
-    setErrorMsg('')
+  }, [open, contract])
+
+  function handleOpenChange(val: boolean) {
+    if (!val) {
+      setErrorMsg('')
+    }
     onOpenChange(val)
   }
 
@@ -153,7 +172,8 @@ export function ContractModal({
         setErrorMsg('O valor total do contrato deve ser maior que zero.')
         return false
       }
-      if (comissaoPercentual < 0 || comissaoPercentual > 100) {
+      const pct = Number(comissaoPercentual)
+      if (Number.isNaN(pct) || pct < 0 || pct > 100) {
         setErrorMsg('A comissão deve ser um percentual entre 0% e 100%.')
         return false
       }
@@ -175,11 +195,17 @@ export function ContractModal({
     else if (step === 'revisao') setStep('condicoes')
   }
 
+  const numComissao = Number.isFinite(Number(comissaoPercentual))
+    ? Math.max(0, Number(comissaoPercentual))
+    : 0
+  const valorComissaoEstimada = calculateCommissionValue(valorTotal, numComissao)
+
   async function handleFinalSubmit() {
     if (!validateStep()) return
     setLoading(true)
     try {
-      const comissao_valor = Math.round(valorTotal * (comissaoPercentual / 100) * 100) / 100
+      const pct = Number.isFinite(Number(comissaoPercentual)) ? Number(comissaoPercentual) : 0
+      const comissao_valor = calculateCommissionValue(valorTotal, pct)
       await onSave({
         cliente_id: clienteId,
         produto_id: produtoId !== 'nenhum' ? produtoId : undefined,
@@ -190,7 +216,7 @@ export function ContractModal({
         periodicidade,
         status,
         venda_id: vendaId !== 'nenhuma' ? vendaId : undefined,
-        comissao_percentual: comissaoPercentual,
+        comissao_percentual: pct,
         comissao_valor,
         observacoes: observacoes.trim() || undefined,
         anexo_url: anexoUrl.trim() || undefined,
@@ -389,10 +415,23 @@ export function ContractModal({
                     type="number"
                     min={0}
                     max={100}
-                    value={comissaoPercentual}
-                    onChange={(e) => setComissaoPercentual(Number(e.target.value))}
+                    step="0.1"
+                    value={Number.isNaN(comissaoPercentual) ? '' : comissaoPercentual}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setComissaoPercentual(val === '' ? 0 : Number(val))
+                    }}
                     className="h-8 text-[12px]"
                   />
+                  {numComissao > 0 && valorTotal > 0 && (
+                    <p className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                      ={' '}
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      }).format(valorComissaoEstimada)}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <label className="text-[12px] font-medium text-[#475569]">Status</label>
@@ -469,10 +508,10 @@ export function ContractModal({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#64748b]">Comissão Estimada:</span>
-                  <span className="font-mono font-semibold text-emerald-700">
-                    {comissaoPercentual}% (
+                  <span className="font-mono font-semibold text-emerald-700 dark:text-emerald-400">
+                    {numComissao}% (
                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-                      valorTotal * (comissaoPercentual / 100),
+                      valorComissaoEstimada,
                     )}
                     )
                   </span>
