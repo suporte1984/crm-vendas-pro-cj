@@ -25,6 +25,8 @@ import {
   Trash2,
   UserCheck,
   X,
+  Radio,
+  Inbox,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Brand } from '@/components/Brand'
@@ -51,7 +53,11 @@ import { useOrganization, DEFAULT_ORG_NAME } from '@/contexts/OrganizationContex
 import { useTheme } from '@/lib/theme'
 import { Moon, Sun } from 'lucide-react'
 
-const primary = [{ to: '/ask', label: 'Agent', icon: Sparkles, badge: 'IA' }]
+const primary = [
+  { to: '/inbox', label: 'Caixa de Entrada', icon: Inbox },
+  { to: '/channels', label: 'Conexões', icon: Radio },
+  { to: '/ask', label: 'Agent', icon: Sparkles, badge: 'IA' },
+]
 
 const sales = [
   { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },

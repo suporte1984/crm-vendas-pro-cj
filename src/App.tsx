@@ -13,6 +13,10 @@ import { ContractsPage } from '@/pages/vendas-pro/ContractsPage'
 import { SalesPage } from '@/pages/vendas-pro/SalesPage'
 import { ResultsPage } from '@/pages/vendas-pro/ResultsPage'
 import { CommissionsPage } from '@/pages/vendas-pro/CommissionsPage'
+import { ChannelsPage } from '@/pages/channels/ChannelsPage'
+import { ChannelTypeSelectionPage } from '@/pages/channels/ChannelTypeSelectionPage'
+import { ChannelFormPage } from '@/pages/channels/ChannelFormPage'
+import { InboxPage } from '@/pages/channels/InboxPage'
 import ConfirmEmailChange from '@/pages/ConfirmEmailChange'
 import Campaigns from '@/pages/Campaigns'
 import CaptureForms from '@/pages/CaptureForms'
@@ -67,6 +71,11 @@ export default function App() {
                   <Route path="vendas-pro/vendas" element={<SalesPage />} />
                   <Route path="vendas-pro/resultados" element={<ResultsPage />} />
                   <Route path="vendas-pro/comissoes" element={<CommissionsPage />} />
+                  <Route path="channels" element={<ChannelsPage />} />
+                  <Route path="channels/new" element={<ChannelTypeSelectionPage />} />
+                  <Route path="channels/new/form" element={<ChannelFormPage />} />
+                  <Route path="channels/:id/edit" element={<ChannelFormPage />} />
+                  <Route path="inbox" element={<InboxPage />} />
                   <Route path="configuracoes" element={<Settings />} />
                 </Route>
               </Route>
