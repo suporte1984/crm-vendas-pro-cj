@@ -105,7 +105,7 @@ export function InboxPage() {
   }, [conversations])
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] flex-col space-y-4">
+    <div className="flex h-full min-h-0 w-full flex-col p-4 sm:p-6 space-y-4 max-w-[1400px] mx-auto">
       {/* Topo / Barra de Ações Rápidas */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3">

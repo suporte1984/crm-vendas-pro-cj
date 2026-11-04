@@ -180,7 +180,7 @@ export function ChannelsPage() {
   }, [connections, search, typeFilter])
 
   return (
-    <div className="space-y-6">
+    <div className="w-full p-4 sm:p-6 space-y-6 max-w-[1400px] mx-auto">
       {/* Topo / Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
