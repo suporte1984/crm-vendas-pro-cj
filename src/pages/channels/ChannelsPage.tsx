@@ -77,7 +77,13 @@ export function ChannelsPage() {
   const [showArchived, setShowArchived] = useState(false)
   const [metaModalOpen, setMetaModalOpen] = useState(false)
 
-  const canManage = user?.role === 'admin' || user?.role === 'gestor'
+  const isAdminOrGestor = user?.role === 'admin' || user?.role === 'gestor'
+  // Qualquer usuário autenticado pode criar conexões e gerenciar as que ele
+  // mesmo criou; admin/gestor gerenciam todas.
+  const canManage = Boolean(user)
+  const canManageAll = isAdminOrGestor
+  const canManageConnection = (conn: ChannelConnection) =>
+    canManageAll || (Boolean(user) && conn.owner === user?.id)
 
   useEffect(() => {
     loadConnections()
@@ -100,10 +106,10 @@ export function ChannelsPage() {
   }
 
   async function handleToggleStatus(conn: ChannelConnection) {
-    if (!canManage) {
+    if (!canManageConnection(conn)) {
       toast({
         title: 'Ação restrita',
-        description: 'Apenas administradores e gestores podem alterar canais.',
+        description: 'Você só pode gerenciar conexões que você mesmo criou.',
         variant: 'destructive',
       })
       return
@@ -127,7 +133,7 @@ export function ChannelsPage() {
   }
 
   async function handleToggleConexao(conn: ChannelConnection) {
-    if (!canManage) return
+    if (!canManageConnection(conn)) return
     const nextConexao = conn.conexao_status === 'conectado' ? 'desconectado' : 'conectado'
     try {
       await updateChannelConnection(conn.id, { conexao_status: nextConexao })
@@ -145,7 +151,7 @@ export function ChannelsPage() {
   }
 
   async function handleArchive(conn: ChannelConnection) {
-    if (!canManage) return
+    if (!canManageConnection(conn)) return
     if (!window.confirm(`Deseja arquivar o canal "${conn.name}"?`)) return
     try {
       await archiveChannelConnection(conn.id)
@@ -331,7 +337,7 @@ export function ChannelsPage() {
 
                       {/* Ações superiores */}
                       <div className="flex items-center gap-1 text-muted-foreground">
-                        {canManage && (
+                        {canManageConnection(conn) && (
                           <>
                             <button
                               onClick={() => navigate(`/channels/${conn.id}/edit`)}
@@ -370,7 +376,7 @@ export function ChannelsPage() {
                         <span className="text-muted-foreground">Status</span>
                         <button
                           onClick={() => handleToggleStatus(conn)}
-                          disabled={!canManage}
+                          disabled={!canManageConnection(conn)}
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition ${
                             isAtivo
                               ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:opacity-80'
@@ -385,7 +391,7 @@ export function ChannelsPage() {
                         <span className="text-muted-foreground">Conexão</span>
                         <button
                           onClick={() => handleToggleConexao(conn)}
-                          disabled={!canManage}
+                          disabled={!canManageConnection(conn)}
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold transition ${
                             isConectado
                               ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'

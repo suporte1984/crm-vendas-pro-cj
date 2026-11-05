@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
 import { useCrm } from '@/contexts/CrmContext'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   createChannelConnection,
   getChannelConnection,
@@ -33,6 +34,7 @@ export function ChannelFormPage() {
   const { id } = useParams()
   const { toast } = useToast()
   const { stages, users } = useCrm()
+  const { user } = useAuth()
 
   const isEditing = Boolean(id)
   const initialTipo = (searchParams.get('tipo') as ChannelTipo) || 'whatsapp_cloud'
@@ -106,6 +108,7 @@ export function ChannelFormPage() {
     try {
       const conexaoStatus: ChannelConexaoStatus = status === 'ativo' ? 'conectado' : 'desconectado'
       const payload = {
+        owner: user?.id,
         name: name.trim(),
         tipo,
         status,
