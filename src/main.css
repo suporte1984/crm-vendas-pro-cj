@@ -118,6 +118,19 @@
   .dark .hover\:bg-\[\#fafafa\]:hover {
     background-color: #1a233a !important;
   }
+  /* Fundo #e2e8f0 no dark vira superfície elevada navy (itens ativos da sidebar,
+     chips de filtro selecionados etc.): navy mais claro que o fundo (#0a0e17) e
+     contraste AA+ com o texto claro (#f1f5f9) já mapeado. No claro, permanece
+     #e2e8f0 com texto #1c1c1e (visual atual). */
+  .dark .bg-\[\#e2e8f0\] {
+    background-color: #263349 !important;
+  }
+  .dark .hover\:bg-\[\#e2e8f0\]:hover {
+    background-color: #202b40 !important;
+  }
+  .dark .hover\:bg-\[\#cbd5e1\]:hover {
+    background-color: #2b3850 !important;
+  }
 
   /* Bordas sutis no dark */
   .dark .border-\[\#e5e7eb\],
