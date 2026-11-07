@@ -159,11 +159,46 @@
   .dark .text-\[\#334155\] {
     color: #cbd5e1 !important;
   }
-  .dark .text-\[\#64748b\] {
-    color: #94a3b8 !important;
+  /* Texto secundário/muted no dark: tons com ≥ 4.5:1 de contraste sobre o
+     fundo navy (#0a0e17) e sobre superfícies elevadas (#263349). O modo claro
+     permanece intocado — apenas overrides .dark. */
+  .dark .text-\[\#64748b\],
+  .dark .text-slate-500 {
+    color: #a3b0c4 !important;
   }
-  .dark .text-\[\#94a3b8\] {
-    color: #64748b !important;
+  .dark .text-\[\#94a3b8\],
+  .dark .text-slate-400 {
+    color: #b0bccd !important;
+  }
+  /* tons slate-600/700 usados como texto secundário e em chips de status */
+  .dark .text-slate-600,
+  .dark .text-slate-700 {
+    color: #cbd5e1 !important;
+  }
+  /* Fundos de chips de status em tons claros de slate (ficariam claros demais
+     no navy; mapeados junto com o texto para manter o contraste) */
+  .dark .bg-slate-100,
+  .dark .bg-slate-50 {
+    background-color: #1a233a !important;
+  }
+  .dark .border-slate-300,
+  .dark .border-slate-200 {
+    border-color: #334155 !important;
+  }
+
+  /* Estados de texto (hover/placeholder/disabled) geram classes próprias
+     (hover:text-[#1c1c1e] etc.) que os seletores acima não cobrem — sem isto,
+     o hover ficaria com texto escuro sobre navy escuro. */
+  .dark .hover\:text-\[\#1c1c1e\]:hover,
+  .dark .hover\:text-\[\#0f172a\]:hover {
+    color: #f1f5f9 !important;
+  }
+  .dark .group:hover .group-hover\:text-\[\#1c1c1e\] {
+    color: #f1f5f9 !important;
+  }
+  .dark .placeholder\:text-\[\#94a3b8\]::placeholder,
+  .dark .disabled\:text-\[\#94a3b8\]:disabled {
+    color: #8b9aae !important;
   }
 
   /* Ajustes para inputs, selects e tabelas no dark */
@@ -174,7 +209,7 @@
   }
   .dark input::placeholder,
   .dark textarea::placeholder {
-    color: #475569 !important;
+    color: #8b9aae !important;
   }
   button,
   input,
